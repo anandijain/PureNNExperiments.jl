@@ -2,7 +2,7 @@
 
 julia_version = "1.10.0-DEV"
 manifest_format = "2.0"
-project_hash = "9d6fd215f1662a60b54ced886e0b8a3b2c81a9eb"
+project_hash = "3ba74968e0874f19522c10402af2e15117bd3de3"
 
 [[deps.ATK_jll]]
 deps = ["Artifacts", "Glib_jll", "JLLWrappers", "Libdl"]
@@ -1989,6 +1989,12 @@ deps = ["ColorTypes", "Dates", "Downloads", "FFMPEG", "FileIO", "Glob", "ImageCo
 git-tree-sha1 = "8fbbea533756fc1dd830f9438eb985e6adad585c"
 uuid = "d6d074c3-1acf-5d4c-9a43-ef38773959a2"
 version = "1.0.6"
+
+[[deps.WAV]]
+deps = ["Base64", "FileIO", "Libdl", "Logging"]
+git-tree-sha1 = "7e7e1b4686995aaf4ecaaf52f6cd824fa6bd6aa5"
+uuid = "8149f6b0-98f6-5db9-b78f-408fbbb8ef88"
+version = "1.2.0"
 
 [[deps.Wayland_jll]]
 deps = ["Artifacts", "Expat_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg", "XML2_jll"]

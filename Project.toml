@@ -20,6 +20,7 @@ SentinelArrays = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
 SimpleChains = "de6bee2f-e2f4-4ec7-b6ed-219cc6f6e9e5"
 TestImages = "5e47fb64-e119-507b-a336-dd2b206d9990"
 VideoIO = "d6d074c3-1acf-5d4c-9a43-ef38773959a2"
+WAV = "8149f6b0-98f6-5db9-b78f-408fbbb8ef88"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
