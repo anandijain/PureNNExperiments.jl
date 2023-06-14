@@ -38,7 +38,8 @@ act = SimpleChains.σ
 act = relu
 act = tanh
 # N = 4000
-Ls = [20, 20, 20]
+# Ls = [100,100,100]
+Ls = fill(20, 2)
 layers = [TurboDense{true}(act, l) for l in Ls]
 # act = tanh
 model = SimpleChain(
@@ -55,9 +56,9 @@ p = SimpleChains.init_params(model; rng=SimpleChains.local_rng())
 g = SimpleChains.alloc_threaded_grad(model)
 
 fwd = SimpleChains.remove_loss(model)
-opt = SimpleChains.ADAM(1e-3)
+opt = SimpleChains.ADAM()
 
-@benchmark valgrad!($g, $model, $x, $p)
+# @benchmark valgrad!($g, $model, $x, $p)
 
 N = 10000
 
