@@ -4,6 +4,7 @@ using ProgressMeter, BenchmarkTools
 # bn = "short_downscaled_fluid.mp4"
 # fn = _data("10057.png")
 bn = "81.jpeg"
+bn = "10057.png"
 # bn = "010323.wav"
 _bn, ext = splitext(bn)
 fn = _data(bn)
@@ -17,17 +18,25 @@ if ext == "mp4"
 else
     orig_elt = eltype(vid)
     new_elt = RGB{Float32}
-    v = channelview(vid[1:8:end, 1:8:end])
+    # vid = vid[1:8:end, 1:8:end]
+    v = channelview(vid)
     
 end
 
+img_dims = size(vid)
 dims = size(v)
 ci = CartesianIndices(v)
+ci = CartesianIndices(vid)
 x = stack(reshape(map(x -> collect(x.I), ci), :))
 y = Float64.(reshape(vcat([v[x] for x in ci]), 1, :))
+# y = reduce(hcat, reshape(vcat([Float32.(v[:, x]) for x in ci]), 1, :)) # testing a network that outputs all 3 colors instead of having channel be a dimension
+
 
 in_size = size(x, 1)
+out_size = size(y, 1)
 act = SimpleChains.σ
+act = relu
+act = tanh
 # N = 4000
 Ls = [20, 20, 20]
 layers = [TurboDense{true}(act, l) for l in Ls]
@@ -38,7 +47,7 @@ model = SimpleChain(
     # TurboDense{true}(act, 20),
     # TurboDense{true}(act, 20),
     # TurboDense{true}(act, 20),
-    TurboDense{false}(identity, 1),
+    TurboDense{false}(identity, out_size),
     SquaredLoss(y)
 )
 
@@ -50,7 +59,7 @@ opt = SimpleChains.ADAM(1e-3)
 
 @benchmark valgrad!($g, $model, $x, $p)
 
-N = 100
+N = 10000
 
 @showprogress for i in 1:N
 
@@ -62,11 +71,17 @@ N = 100
         opt,
         1;
     )
-    
-    o = only.(fwd.(eachcol(x), (p,)))
-    clamp01!(o)
-    fs = reshape(o, dims) |> colorview(new_elt)
-    display(fs)
+    _fwd = collect.(fwd.(eachcol(x), (p,)))
+    clamp01!.(_fwd)
+
+    _fs = reshape(map(x->RGB(x...), _fwd), img_dims)
+    # o = only.()
+    # clamp01!(o)
+    fs = _fs |> colorview(new_elt)
+
+    if (i % 100 == 0) 
+        display(fs)
+    end
 end
 
 fs = new_elt.(reshape(o, dims))
