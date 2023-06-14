@@ -1,4 +1,4 @@
-using SimpleChains, Images, VideoIO, WAV
+using SimpleChains, Images, VideoIO, WAV, Distributions
 
 bn = "010323.wav"
 _bn, ext = splitext(bn)

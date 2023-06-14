@@ -1,19 +1,25 @@
-using SimpleChains, Images, VideoIO, WAV
+using SimpleChains, Images, VideoIO, WAV, Distributions
 using ProgressMeter, BenchmarkTools
 
-bn = "short_downscaled_fluid.mp4"
+# bn = "short_downscaled_fluid.mp4"
+# fn = _data("10057.png")
+bn = "81.jpeg"
+# bn = "010323.wav"
 _bn, ext = splitext(bn)
 fn = _data(bn)
 vid = load(fn)
 
-# for later when we do rgb video
-# v = stack(channelview.(vid))
-v = stack(vid) # Gray to save memory
-orig_elt = eltype(v)
-new_elt = Gray{N0f8}
-v = new_elt.(v)
-
-# v = v .* 3
+if ext == "mp4"
+    orig_elt = eltype(vid[1]) # only if its a video 
+    vid2 = channelview.(vid)
+    v = stack(vid2)
+    v[:, :, :, 1] |> colorview(orig_elt)
+else
+    orig_elt = eltype(vid)
+    new_elt = RGB{Float32}
+    v = channelview(vid[1:8:end, 1:8:end])
+    
+end
 
 dims = size(v)
 ci = CartesianIndices(v)
@@ -44,12 +50,7 @@ opt = SimpleChains.ADAM(1e-3)
 
 @benchmark valgrad!($g, $model, $x, $p)
 
-outi = only.(fwd.(eachcol(x), (p,)))
-fs = mapslices(x -> Gray.(x), reshape(outi, dims); dims=3)
-display(fs[:, :, 1])
-
-# o = map(only, reshape(, chimgsize...))
-N = 10
+N = 100
 
 @showprogress for i in 1:N
 
@@ -60,21 +61,17 @@ N = 10
         x,
         opt,
         1;
-        # batchsize=10
     )
+    
     o = only.(fwd.(eachcol(x), (p,)))
     clamp01!(o)
-    fs = new_elt.(reshape(o, dims))
-
-    # imgi = Gray{N0f8}.(o)
-    # # imgi = RGB{N0f8}.(colorview(RGB, o))
-
-    # out[i] = imgi
-    # if i % 250 == 0
-    #     display(imgi)
-    # end
-
+    fs = reshape(o, dims) |> colorview(new_elt)
+    display(fs)
 end
+
+fs = new_elt.(reshape(o, dims))
+
 fv = eachslice(fs;dims=3)
-VideoIO.save("vidtest.mp4", fv, framerate=60)
-VideoIO.save("$(_bn)_$(act)_$(lr)_$(skip)_$(N)_$(Ls).mp4", imgs, framerate=60)
+VideoIO.save("vidtest2.mp4", fv, framerate=60)
+
+# VideoIO.save("$(_bn)_$(act)_$(lr)_$(skip)_$(N)_$(Ls).mp4", imgs, framerate=60)

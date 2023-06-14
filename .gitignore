@@ -1,2 +1,5 @@
 out/
 data/
+*.mp4
+*.wav
+*.jpeg
