@@ -42,7 +42,7 @@ in_size = size(x, 1)
 out_size = size(y, 1)
 act = SimpleChains.σ
 act = tanh
-act = relu
+# act = relu
 # N = 4000
 # Ls = fill(20, 2)
 # Ls = fill(20, 3)
@@ -51,7 +51,7 @@ layers = [TurboDense{true}(act, l) for l in Ls]
 model = SimpleChain(
     static(in_size),
     layers...,
-    TurboDense{true}(SimpleChains.σ, out_size),
+    TurboDense{false}(identity, out_size),
     SquaredLoss(y)
 )
 
